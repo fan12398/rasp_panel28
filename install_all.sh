@@ -19,6 +19,7 @@ elif [ $# -eq 1 ]; then
     exit
   else
     rotation=$1
+    echo "Rotate "$rotation" degree"
   fi
 else
   echo "Too many parameters"

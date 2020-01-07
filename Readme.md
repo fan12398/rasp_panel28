@@ -1,16 +1,26 @@
 # 使用说明
 
-1.将屏幕插到树莓派上, 并用铜柱和螺丝固定  
-2.上电，并运行install_all.sh, 如果不需要使用触屏，运行install_disp_only.sh即可  
-3.安装完在之后，树莓派会自动重启
+1.将屏幕模组插到树莓派上, 并用铜柱和螺丝固定  
+2.上电，在(ssh)终端运行
+```
+$ git clone https://github.com/fan12398/rasp_panel28.git
+$ cd rasp_panel28
+$ chmod +x install_all.sh
+$ ./install_all.sh 270
+```
+其中`270`为旋转角度，从`0/90/180/270`四选一，不加参数默认为旋转270度  
+如果不需要安装触屏驱动，将`./install_all.sh`替换为`./install_disp_only.sh`即可  
+3.安装完在之后，树莓派会自动重启  
 
-在`/boot/config.txt`里添加以下内容，
+如果觉得屏幕显示字和图像太小，请在`/boot/config.txt`里添加以下内容，
 ```
 hdmi_force_hotplug=1
 hdmi_group=2
 hdmi_mode=87
 hdmi_cvt=320 240 60 1 0 0 0
 ```
+当旋转角度为0度或180度时(即竖屏显示)，请将最后一行替换为`hdmi_cvt=320 240 60 1 0 0 0`  
+其中,  
 `hdmi_cvt=<width> <height> <framerate> <aspect> <margins> <interlace> <rb>`  
 
 Value|Default|Description
