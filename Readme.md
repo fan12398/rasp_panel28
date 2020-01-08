@@ -19,7 +19,7 @@ hdmi_group=2
 hdmi_mode=87
 hdmi_cvt=320 240 60 1 0 0 0
 ```
-当旋转角度为0度或180度时(即竖屏显示)，请将最后一行替换为`hdmi_cvt=320 240 60 1 0 0 0`  
+当旋转角度为0度或180度时(即竖屏显示)，请将最后一行替换为`hdmi_cvt=240 320 60 1 0 0 0`  
 其中,  
 `hdmi_cvt=<width> <height> <framerate> <aspect> <margins> <interlace> <rb>`  
 
