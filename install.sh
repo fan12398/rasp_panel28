@@ -96,6 +96,16 @@ fbtft_option="./conf/fbtft_option_$rotation.conf"
 sudo cp -rf $fbtft_option /etc/modprobe.d/fbtft_option.conf
 sudo cp -rf ./conf/99-fbdev.conf /usr/share/X11/xorg.conf.d/99-fbdev.conf
 
+match=`sed -n "/^#HDMI settings added by rasp_panel28/=" config.txt`
+mlines=($match)
+if [ ${#mlines[@]} -ne 0 ]; then
+  sed -i "${mlines[0]}d" config.txt
+  sed -i "${mlines[0]}d" config.txt
+  sed -i "${mlines[0]}d" config.txt
+  sed -i "${mlines[0]}d" config.txt
+  sed -i "${mlines[0]}d" config.txt
+fi
+
 read pi_model < /proc/device-tree/model
 pi_model=${pi_model#*Pi }
 if [ ${pi_model:0:1} != 4 ]; then
@@ -121,19 +131,7 @@ if [ ${pi_model:0:1} != 4 ]; then
   else
     hdmi_setting="hdmi_force_hotplug=1\nhdmi_group=2\nhdmi_mode=87\nhdmi_cvt=320 240 60 1 0 0 0"
   fi
-  
-  match=`sed -n "/^#HDMI settings added by rasp_panel28/=" config.txt`
-  mlines=($match)
-  if [ ${#mlines[@]} -eq 0 ]; then
-    echo -e "\n\n$hdmi_note$hdmi_setting" >> config.txt
-  else
-    sed -i "${mlines[0]}d" config.txt
-	sed -i "${mlines[0]}d" config.txt
-    sed -i "${mlines[0]}d" config.txt
-	sed -i "${mlines[0]}d" config.txt
-	sed -i "${mlines[0]}d" config.txt
-	sed -i "${mlines[0]}c$hdmi_note$hdmi_setting" config.txt
-  fi
+  echo -e "$hdmi_note$hdmi_setting" >> config.txt
 fi
 
 echo "Install display driver complete."
