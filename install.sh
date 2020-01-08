@@ -174,6 +174,7 @@ fi
 sudo cp -rf ./config.txt /boot/config.txt
 rm ./config.txt
 chmod +x ./recalibrate.sh
+chmod +x ./uninstall.sh
 
 echo "Now rebooting..."
 sleep 1
