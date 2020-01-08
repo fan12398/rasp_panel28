@@ -101,6 +101,18 @@ pi_model=${pi_model#*Pi }
 if [ ${pi_model:0:1} != 4 ]; then
   echo "This board is not raspberry pi 4, so install fbcp."
   sudo install fbcp /usr/local/bin/fbcp
+  if [ ! -f /etc/backup_rc.local ]; then
+    echo "Backup /etc/rc.local to /etc/backup_rc.local"
+    sudo cp -rf /etc/rc.local /etc/backup_rc.local
+  fi
+  cp /etc/rc.local ./rc
+  match=`sed -n "/^fbcp/=" rc`
+  mlines=($match)
+  if [ ${#mlines[@]} -eq 0 ]; then
+    sed -i "/^exit 0/ifbcp&" rc
+  fi
+  sudo cp -rf ./rc /etc/rc.local 
+  rm ./rc
   
   #add hdmi settings
   hdmi_note="#HDMI settings added by rasp_panel28, comment the 4 lines below if you connect hdmi to your own monitor.\n"
@@ -111,10 +123,16 @@ if [ ${pi_model:0:1} != 4 ]; then
   fi
   
   match=`sed -n "/^#HDMI settings added by rasp_panel28/=" config.txt`
-  if [ ${#match} -eq 0 ]; then
+  mlines=($match)
+  if [ ${#mlines[@]} -eq 0 ]; then
     echo -e "\n\n$hdmi_note$hdmi_setting" >> config.txt
   else
-    sed -i "${match}c$hdmi_note$hdmi_setting" config.txt
+    sed -i "${mlines[0]}d" config.txt
+	sed -i "${mlines[0]}d" config.txt
+    sed -i "${mlines[0]}d" config.txt
+	sed -i "${mlines[0]}d" config.txt
+	sed -i "${mlines[0]}d" config.txt
+	sed -i "${mlines[0]}c$hdmi_note$hdmi_setting" config.txt
   fi
 fi
 
@@ -157,6 +175,7 @@ fi
 
 sudo cp -rf ./config.txt /boot/config.txt
 rm ./config.txt
+chmod +x ./recalibrate.sh
 
 echo "Now rebooting..."
 sleep 1
