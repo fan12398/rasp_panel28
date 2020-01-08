@@ -152,9 +152,9 @@ if [ $install_touch -eq 1 ]; then
     done
   fi
   
-  echo "Installing xserver-xorg-input-evdev..."
+  echo "Installing xinput-calibrator and xserver-xorg-input-evdev..."
   if [ test_network ]; then
-    sudo apt-get install -y xserver-xorg-input-evdev
+    sudo apt-get install -y xinput-calibrator xserver-xorg-input-evdev
   else
     echo "Network is not connected, install local package"
   fi
@@ -165,7 +165,8 @@ if [ $install_touch -eq 1 ]; then
   if [ ! -d /etc/X11/xorg.conf.d ]; then
     sudo mkdir -p /etc/X11/xorg.conf.d
   fi
-
+  
+  sudo cp -rf /usr/share/X11/xorg.conf.d/10-evdev.conf /usr/share/X11/xorg.conf.d/45-evdev.conf
   calibration="./conf/calibration_$rotation.conf"
   sudo cp -rf $calibration /etc/X11/xorg.conf.d/99-calibration.conf
   echo "Install touch driver complete."
