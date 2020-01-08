@@ -1,6 +1,6 @@
 print_help()
 {
-echo "Usage: ./install_disp_only.sh [0/90/180/270] [only_disp]"
+echo "Usage: ./install.sh [0/90/180/270] [only_disp]"
 echo "0: rotate 0 degrees"
 echo "90: rotate 90 degrees"
 echo "180: rotate 180 degrees"
@@ -13,9 +13,7 @@ function test_network()
 {
     local timeout=1
     local target=www.qq.com
-
     local ret_code=`curl -I -s --connect-timeout ${timeout} ${target} -w %{http_code} | tail -n1`
-
     if [ "x$ret_code" = "x200" ]; then
         return 1
     else
@@ -26,25 +24,49 @@ function test_network()
 
 rotation=270
 install_touch=1
+invalid=0
 if [ $# -eq 0 ]; then
-  echo "Default rotate 270 degree, install display and touch drivers."
-elif [ $# -eq 1 ] || [ $# -eq 2 ]; then
-  if [ $1 -ne 0 ] && [ $1 -ne 90 ] && [ $1 -ne 180 ] && [ $1 -ne 270 ]; then
-    echo "Invalid parameter."
-    print_help
-    exit
-  else
+  echo "Use default parameters."
+elif [ $# -eq 1 ]; then
+  if [ $1 = only_disp ]; then
+    install_touch=0
+  elif [ $1 -eq 0 ] || [ $1 -eq 90 ] || [ $1 -eq 180 ] || [ $1 -eq 270 ]; then
     rotation=$1
-    echo "Rotate "$rotation" degree."
+  else
+    invalid=1
   fi
-  if [ $# -eq 2 ] && [ $2 = only_disp ]; then
-      install_touch=0
-	  echo "Touch driver is ignored."
+elif [ $# -eq 2 ]; then
+  if [ $1 = only_disp ]; then
+    install_touch=0
+	if [ $2 -eq 0 ] || [ $2 -eq 90 ] || [ $2 -eq 180 ] || [ $2 -eq 270 ]; then
+      rotation=$2
+    else
+	  invalid=1
+    fi
+  elif [ $2 = only_disp ]; then
+    install_touch=0
+    if [ $1 -eq 0 ] || [ $1 -eq 90 ] || [ $1 -eq 180 ] || [ $1 -eq 270 ]; then
+      rotation=$1
+    else
+      invalid=1
+    fi
+  else
+    invalid=1
   fi
 else
-  echo "Too many parameters."
+  invalid=1
+fi
+
+if [ $invalid -eq 1 ]; then
+  echo "Invalid parameters input."
   print_help
   exit
+fi
+echo "Rotate $rotation degree."
+if [ $install_touch -eq 1 ]; then
+  echo "Enable installing touch driver."
+else
+  echo "Touch driver is ignored."
 fi
 
 #backup file /boot/config.txt
@@ -54,25 +76,23 @@ if [ ! -f /boot/backup_config.txt ]; then
 fi
 cp /boot/config.txt ./config.txt
 
-# install display
 echo "Installing display driver..."
 
 #add spi=on to config.txt
 match=`sed -n "/^.*dtparam=spi/=" config.txt`
 mlines=($match)
 if [ ${#mlines[@]} -eq 0 ]; then
-  sudo echo -e "\ndtparam=spi=on" >> config.txt
+  echo -e "\ndtparam=spi=on" >> config.txt
 else
-  sudo sed -i "${mlines[0]}cdtparam=spi=on" config.txt
-  for ((i=1;i<${#mlines[@]};i++))
+  sed -i "${mlines[0]}cdtparam=spi=on" config.txt
+  for ((i=${#mlines[@]}-1;i>0;i--))
   do
-    sudo sed -i "${mlines[i]}d" config.txt
+    sed -i "${mlines[i]}d" config.txt
   done
 fi
 
-
 sudo cp -rf ./conf/fbtft.conf /etc/modules-load.d/fbtft.conf
-fbtft_option="./conf/fbtft_option_"$rotation".conf"
+fbtft_option="./conf/fbtft_option_$rotation.conf"
 sudo cp -rf $fbtft_option /etc/modprobe.d/fbtft_option.conf
 sudo cp -rf ./conf/99-fbdev.conf /usr/share/X11/xorg.conf.d/99-fbdev.conf
 
@@ -92,10 +112,9 @@ if [ ${pi_model:0:1} != 4 ]; then
   
   match=`sed -n "/^#HDMI settings added by rasp_panel28/=" config.txt`
   if [ ${#match} -eq 0 ]; then
-    echo "hdmi match empty"
-    sudo echo -e "\n\n"$hdmi_note$hdmi_setting >> config.txt
+    echo -e "\n\n$hdmi_note$hdmi_setting" >> config.txt
   else
-    sudo sed -i "$matchc$hdmi_note$hdmi_setting" config.txt
+    sed -i "${match}c$hdmi_note$hdmi_setting" config.txt
   fi
 fi
 
@@ -104,17 +123,16 @@ echo "Install display driver complete."
 if [ $install_touch -eq 1 ]; then
   echo "Installing touch driver..."
   
-  #add dtoverlay=ads7846
   touch_setting="dtoverlay=ads7846,penirq=4,swapxy=1,pmax=255,xohms=80"
   match=`sed -n "/^.*dtoverlay=ads7846/=" config.txt`
   mlines=($match)
   if [ ${#mlines[@]} -eq 0 ]; then
-    sudo echo -e "\n"$touch_setting >> config.txt
+    echo -e "\n$touch_setting" >> config.txt
   else
-    sudo sed -i "${mlines[0]}c$touch_setting" config.txt
-    for ((i=1;i<${#mlines[@]};i++))
+    sed -i "${mlines[0]}c$touch_setting" config.txt
+    for ((i=${#mlines[@]}-1;i>0;i--))
     do
-      sudo sed -i "${mlines[i]}d" config.txt
+      sed -i "${mlines[i]}d" config.txt
     done
   fi
   
@@ -132,7 +150,7 @@ if [ $install_touch -eq 1 ]; then
     sudo mkdir -p /etc/X11/xorg.conf.d
   fi
 
-  calibration="./conf/calibration_"$rotation".conf"
+  calibration="./conf/calibration_$rotation.conf"
   sudo cp -rf $calibration /etc/X11/xorg.conf.d/99-calibration.conf
   echo "Install touch driver complete."
 fi
@@ -140,6 +158,6 @@ fi
 sudo cp -rf ./config.txt /boot/config.txt
 rm ./config.txt
 
-echo "Rebooting now..."
+echo "Now rebooting..."
 sleep 1
 sudo reboot
