@@ -156,7 +156,7 @@ if [ $install_touch -eq 1 ]; then
   if [ test_network ]; then
     sudo apt-get install -y xinput-calibrator xserver-xorg-input-evdev
   else
-    echo "Network is not connected, install local package"
+    echo "Network is not connected, please install xinput-calibrator and xserver-xorg-input-evdev manually or re-run this script."
   fi
 
   if [ -f /etc/X11/xorg.conf.d/40-libinput.conf ]; then
