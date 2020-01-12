@@ -94,6 +94,9 @@ fi
 sudo cp -rf ./conf/fbtft.conf /etc/modules-load.d/fbtft.conf
 fbtft_option="./conf/fbtft_option_$rotation.conf"
 sudo cp -rf $fbtft_option /etc/modprobe.d/fbtft_option.conf
+if [ ! -d /usr/share/X11/xorg.conf.d ]; then
+    sudo mkdir -p /usr/share/X11/xorg.conf.d
+fi
 sudo cp -rf ./conf/99-fbdev.conf /usr/share/X11/xorg.conf.d/99-fbdev.conf
 
 match=`sed -n "/^#HDMI settings added by rasp_panel28/=" config.txt`

@@ -24,8 +24,12 @@ $ ./recalibrate.sh
 ```
 用触屏笔点击四个校准点，即可完成校准操作。
 
+# 桌面小屏适配
+初次进入桌面后，发现图标和文字都很大。可以在桌面点击左上角的`菜单`图标，在下拉框中依次选择`Preferences`->`Apperance Settings`。然后在窗体中选择最后一个`Defaults`选项卡，点击最下面一个`For small screens`后面的按钮，关闭该窗体即完成小屏适配。  
+![小屏适配](./doc/桌面设置小屏适配.jpg)
+
 # 管脚说明
-![树莓派40pin](http://shumeipai.nxez.com/wp-content/uploads/2015/03/rpi-pins-40-0.png)  
+![树莓派40pin说明](http://shumeipai.nxez.com/wp-content/uploads/2015/03/rpi-pins-40-0.png)  
 2.8寸IPS屏模块使用管脚的 BCM 编码:  
 SPI_CLK  -> 11  
 SPI_MOSI -> 10  
