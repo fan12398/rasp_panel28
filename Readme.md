@@ -23,3 +23,18 @@ $ cd rasp_panel28
 $ ./recalibrate.sh
 ```
 用触屏笔点击四个校准点，即可完成校准操作。
+
+# 管脚说明
+![树莓派40pin](http://shumeipai.nxez.com/wp-content/uploads/2015/03/rpi-pins-40-0.png)  
+2.8寸IPS屏模块使用管脚的 BCM 编码:  
+SPI_CLK  -> 11  
+SPI_MOSI -> 10  
+SPI_MISO -> 9  
+LCD_CS   -> 8 (spi0.0 CE0)  
+LCD_DC   -> 22  
+LCD_RST  -> 27  
+LCD_BL   -> 17  
+TOUCH_CS -> 7 (spi0.1 CE1)  
+TOUCH_IRQ-> 4  
+
+3.3V 和 GND 选择对应的管脚连接即可。  
